@@ -6,12 +6,19 @@ import Student from "./Student";
 import Results from "./Results";
 import { Routes, Route, Link, NavLink } from "react-router-dom";
 import { useState } from "react";
+import Seeresults from "./Seeresults";
+import Studentgrades from "./Studentgrades";
+import Goback from "./Goback";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
   const students = useStudents();
   const subjects = ["React", "HTML", "CSS", "JS"];
   const [studentId, setStudentId] = useState([]);
-  function handleClick(id) {}
+  const navigate = useNavigate();
+  function handleClick(id) {
+    return;
+  }
   return (
     <div className="App">
       <nav>
@@ -47,12 +54,14 @@ const App = () => {
                   <Students
                     students={students}
                     handleClick={handleClick}
-                    saveId={(fName, lName, email, phone) =>
+                    GobackComponent={<Goback navigate={navigate} />}
+                    saveId={(fName, lName, email, phone, id) =>
                       setStudentId({
                         first: fName,
                         last: lName,
                         email: email,
                         phone: phone,
+                        id: id,
                       })
                     }
                   />
@@ -60,16 +69,53 @@ const App = () => {
               />
               <Route
                 path="/students/:id"
-                element={<Student student={studentId} />}
+                element={
+                  <Student
+                    student={studentId}
+                    GobackComponent={<Goback navigate={navigate} />}
+                    newComponent={
+                      <Seeresults
+                        studentId={studentId.id}
+                        handleClick={handleClick}
+                      />
+                    }
+                  />
+                }
               />
               <Route
                 path="/results"
-                element={<Results subjects={subjects} students={students} />}
+                element={
+                  <Results
+                    subjects={subjects}
+                    students={students}
+                    handleClick={handleClick}
+                    saveId={(fName, lName, email, phone, id) =>
+                      setStudentId({
+                        first: fName,
+                        last: lName,
+                        email: email,
+                        phone: phone,
+                        id: id,
+                      })
+                    }
+                    GobackComponent={<Goback navigate={navigate} />}
+                  />
+                }
+              />
+              <Route
+                path="/results/:id"
+                element={
+                  <Student
+                    student={studentId}
+                    newComponent={<Studentgrades subjects={subjects} />}
+                    GobackComponent={<Goback navigate={navigate} />}
+                  />
+                }
               />
             </Routes>
           </em>
         </div>
-        <Instructions className="block" />
+        <Instructions />
       </div>
     </div>
   );
